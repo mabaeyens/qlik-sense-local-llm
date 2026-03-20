@@ -2,7 +2,7 @@
 
 ## Context
 
-This is a standalone project built to understand how Retrieval-Augmented Generation works in practice — how documents are ingested, how relevant chunks are retrieved, how a reranker improves precision, and how an LLM produces a grounded answer.
+This is a [standalone project](https://github.com/mabaeyens/RAG) built to understand how Retrieval-Augmented Generation works in practice — how documents are ingested, how relevant chunks are retrieved, how a reranker improves precision, and how an LLM produces a grounded answer.
 
 The inspiration was **[Qlik Answers](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/QlikAnswers/Qlik-Answers.htm)** (the document Q&A capability in Qlik Cloud), which is built on RAG principles. This project was developed independently before Qlik Answers was publicly available — not as a replica, but as a hands-on way to understand the architecture from the ground up.
 
