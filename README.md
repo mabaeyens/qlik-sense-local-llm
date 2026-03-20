@@ -64,7 +64,7 @@ Screenshots of each pattern running in Qlik Sense are planned for a future updat
 
 These patterns were tested with local, quantized models — including [Mistral 7B Instruct](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3) from Hugging Face — which run well on modest hardware and keep all data on-premises.
 
-That said, the best results by a clear margin came from [Claude](https://claude.ai) (Anthropic). After several years as a subscriber and across many different use cases, I have not found another model that consistently performs better — in terms of reasoning quality, instruction following, and response coherence. This is a personal observation, not a sponsored recommendation.
+That said, the best results by a clear margin came from [Claude](https://claude.ai) (Anthropic). After years as a subscriber and across many different use cases, I have not found another model that consistently performs better — in terms of reasoning quality, instruction following, and response coherence. This is a personal observation, not a sponsored recommendation.
 
 If your constraints allow an external API call, Claude is what I would reach for first.
 
