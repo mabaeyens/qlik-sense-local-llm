@@ -48,7 +48,7 @@ Patterns 1 and 2 integrate directly with the Qlik Engine. Pattern 3 is a standal
 
 ## Screenshots
 
-Screenshots of each pattern running in Qlik Sense are planned for a future update. See the [`screenshots/`](screenshots/) folder.
+Screenshots of each pattern running in Qlik Sense are planned for a future update. Stay tuned to the [`screenshots/`](screenshots/) folder.
 
 ---
 
