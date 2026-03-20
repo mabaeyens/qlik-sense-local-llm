@@ -32,7 +32,7 @@ sequenceDiagram
 
 ## Why the proxy?
 
-Qlik Sense on Windows runs in a browser. Browsers enforce **CORS (Cross-Origin Resource Sharing)** restrictions: a page served from `https://qlik-server` cannot call `https://api.anthropic.com` or any other external API directly.
+Qlik Sense on Windows runs in a browser. Browsers enforce **[CORS (Cross-Origin Resource Sharing)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)** restrictions: a page served from `https://qlik-server` cannot call `https://api.anthropic.com` or any other external API directly.
 
 A local HTTPS proxy running on the Qlik server (or on the client machine) solves this: the browser calls `https://localhost`, which is allowed, and the proxy forwards the request to the LLM API.
 
@@ -80,3 +80,13 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 - Node.js runtime on the machine running the proxy
 - Access to an LLM API (local or remote, OpenAI-compatible)
 - Browser trust configured for the self-signed SSL certificate
+
+---
+
+## Limitations and scaling considerations
+
+**On-premises scaling:** This pattern was designed for individual or small-team use. Scaling it to many concurrent users introduces practical constraints: each LLM request can take several seconds, and LLM API rate limits impose an upper bound on throughput. The local proxy has no authentication layer, request queuing, or rate-limiting of its own. For organization-wide deployment, a production-grade service with proper access control and error handling would be needed.
+
+**Context scope:** The context provided to the LLM is limited to the data visible in a single Qlik chart — rows, dimensions, measures — plus basic data model metadata (table names, column names, field relationships). This is a narrow slice of the full application context. By contrast, [Qlik Answers](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/QlikAnswers/Qlik-Answers.htm) can leverage the complete semantic layer of a Qlik app, including all field associations and business logic embedded in the data model. For analytical questions that require broader application context, this architecture has inherent limitations.
+
+**Next steps:** A natural extension of this pattern is to combine chart-level context with document-level knowledge through RAG (Retrieval-Augmented Generation). Ideas for this approach are developed in [Pattern 3](pattern-3-rag-documents.md).
