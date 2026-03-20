@@ -66,7 +66,9 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 
 **Data volume:** Qlik charts can return thousands of rows. The extension applies a configurable row limit before sending data to avoid exceeding model token limits. In practice, 500–1000 rows are sufficient for most analytical questions.
 
-**SSL certificates:** The proxy uses HTTPS with a self-signed certificate. The certificate must be trusted by the browser and accepted by Qlik Sense to avoid TLS errors. This is a one-time setup step on each machine.
+**SSL certificates:** The proxy must run on HTTPS. Qlik Sense is served over HTTPS, and browsers block mixed content — calls from a secure page to an HTTP endpoint are rejected before leaving the browser. This makes HTTPS a functional requirement, not just a security choice.
+
+In this project, self-signed certificates are used to minimise cost and setup overhead. In a corporate deployment, the proxy can use certificates issued by the organisation's own CA — already trusted in the Windows root certificate store — which removes the manual browser trust step. Either way, HTTPS also ensures that the API key and chart data, which may be confidential, are not transmitted in plaintext over the local network.
 
 **Port:** The proxy port is configurable via environment variable (default: 3000). The allowed origin (your Qlik Sense server URL) is also configured at the proxy level to restrict CORS access.
 
