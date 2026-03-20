@@ -2,7 +2,7 @@
 
 ## Business problem
 
-Data teams want to use LLM-generated text directly inside Qlik load scripts or chart expressions and not as a separate UI panel, but as a native part of the Qlik visualization layer, an extension.
+Users want to use LLM-generated text directly inside Qlik load scripts or chart expressions and not as a separate UI panel, but as a native part of the Qlik visualization layer, an extension.
 
 **Examples:**
 
