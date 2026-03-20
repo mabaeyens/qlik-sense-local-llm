@@ -1,4 +1,4 @@
-# Pattern 2 — LLM in Qlik Expressions
+# Pattern 2: LLM in Qlik Expressions
 
 ## Business problem
 
