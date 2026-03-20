@@ -2,11 +2,11 @@
 
 Qlik Cloud delivers AI-assisted analytics natively — Insight Advisor, natural language queries, and AI-generated summaries are available out of the box.
 
-Organizations running **Qlik Sense Enterprise on Windows** follow a different release cycle and do not have access to these cloud-native AI features by default.
+Organizations running **[Qlik Sense Enterprise on Windows](https://help.qlik.com/en-US/sense/Content/Sense_Helpsites/Home-Sense.htm)** follow a different release cycle and do not have access to these cloud-native AI features by default.
 
 This does not mean AI integration is impossible. It means it requires architecture.
 
-This repository documents two direct integration patterns for Qlik Sense on Windows, plus a standalone RAG pipeline that explores the architecture behind document AI systems like Qlik Answers. Each pattern addresses a different business problem and is compatible with any OpenAI-compatible LLM — local (LM Studio, Ollama) or remote (OpenAI, Anthropic, Azure OpenAI).
+This repository documents two direct integration patterns for Qlik Sense on Windows, plus a standalone RAG pipeline that explores the architecture behind document AI systems like Qlik Answers. Each pattern addresses a different business problem and is compatible with any OpenAI-compatible LLM — local ([LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai)) or remote (OpenAI, Anthropic, Azure OpenAI).
 
 > **These are reference architectures, not a code library.** The goal is to show that these integrations are possible and production-tested. How you implement them is up to you.
 
@@ -55,7 +55,7 @@ Screenshots of each pattern running in Qlik Sense are planned for a future updat
 ## Tested on
 
 - Qlik Sense Enterprise on Windows
-- LM Studio with local models (Llama, Mistral)
+- [LM Studio](https://lmstudio.ai) with local models (Llama, Mistral)
 - Anthropic Claude API
 
 ---

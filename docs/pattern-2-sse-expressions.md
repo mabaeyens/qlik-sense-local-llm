@@ -35,7 +35,7 @@ graph LR
 
 ## What is Qlik SSE?
 
-The **Server-Side Extension (SSE)** protocol is an official Qlik mechanism that allows external services to expose functions callable from Qlik load scripts and chart expressions. Communication uses **gRPC**, which means:
+The **[Server-Side Extension (SSE)](https://github.com/qlik-oss/server-side-extension)** protocol is an official Qlik mechanism that allows external services to expose functions callable from Qlik load scripts and chart expressions. Communication uses **[gRPC](https://grpc.io)**, which means:
 
 - The SSE plugin runs as a separate process, not in the browser
 - Qlik Engine calls it directly — no browser, no CORS
@@ -77,7 +77,7 @@ This makes SSE better suited than Pattern 1 for **batch processing** or **load-t
 
 **Synchronous execution:** SSE calls are synchronous from Qlik's perspective. LLM response latency will slow down dashboard rendering or reload jobs if expressions call the function at scale. Keep prompts concise and consider caching strategies for repeated inputs.
 
-**OpenAI compatibility:** Any server implementing `/v1/chat/completions` works — LM Studio, Ollama, OpenAI, Azure OpenAI, or a custom adapter. The SSE plugin is backend-agnostic.
+**OpenAI compatibility:** Any server implementing `/v1/chat/completions` works — [LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai), OpenAI, Azure OpenAI, or a custom adapter. The SSE plugin is backend-agnostic.
 
 **Configuration in QMC:** The SSE connection must be registered in the Qlik Management Console under *Analytic connections*, specifying the plugin host and port. This is a one-time admin step.
 
@@ -87,6 +87,6 @@ This makes SSE better suited than Pattern 1 for **batch processing** or **load-t
 
 ## Prerequisites
 
-- Qlik Sense Enterprise on Windows with SSE support enabled in QMC
+- [Qlik Sense Enterprise on Windows](https://help.qlik.com/en-US/sense/Content/Sense_Helpsites/Home-Sense.htm) with SSE support enabled in QMC
 - Python 3.8+ on the server running the SSE plugin
-- An OpenAI-compatible LLM endpoint (local: LM Studio, Ollama; remote: OpenAI, Azure OpenAI, Anthropic via adapter)
+- An OpenAI-compatible LLM endpoint (local: [LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai); remote: OpenAI, Azure OpenAI, Anthropic via adapter)

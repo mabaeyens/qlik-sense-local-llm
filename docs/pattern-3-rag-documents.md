@@ -49,7 +49,7 @@ graph TD
 
 ## What is RAG?
 
-**Retrieval-Augmented Generation (RAG)** prevents LLM hallucination by grounding responses in a specific document corpus:
+**[Retrieval-Augmented Generation (RAG)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)** prevents LLM hallucination by grounding responses in a specific document corpus:
 
 1. Documents are split into chunks and converted to **vector embeddings** — numerical representations of semantic meaning.
 2. At query time, the question is also embedded, and the most semantically similar chunks are retrieved from the vector database.
@@ -57,14 +57,16 @@ graph TD
 
 A **reranker** (CrossEncoder model) adds a second pass: the top-k retrieved chunks are re-scored against the exact question before being sent to the LLM, improving precision over pure similarity search.
 
+> The RAG pattern was introduced by Lewis et al. (2020) at Meta AI Research: [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401).
+
 ---
 
 ## Components
 
 | Component | Role | Technology |
 |-----------|------|-----------|
-| PDF Ingestor | Extracts text, splits into chunks, generates embeddings | Python / PyMuPDF / sentence-transformers |
-| Vector Database | Persists embeddings for fast similarity search | ChromaDB (local, on-disk) |
+| PDF Ingestor | Extracts text, splits into chunks, generates embeddings | Python / [PyMuPDF](https://pymupdf.readthedocs.io) / sentence-transformers |
+| Vector Database | Persists embeddings for fast similarity search | [ChromaDB](https://www.trychroma.com) (local, on-disk) |
 | Query Embedder | Converts user question to a vector for search | sentence-transformers (same model as ingestion) |
 | Reranker | Re-scores retrieved chunks against the question | CrossEncoder (`ms-marco-MiniLM-L-6-v2`) |
 | LLM Server | Generates the final answer from retrieved context | Any OpenAI-compatible API |
@@ -77,12 +79,12 @@ A **reranker** (CrossEncoder model) adds a second pass: the top-k retrieved chun
 
 1. PDFs are read and split into overlapping text chunks.
 2. Each chunk is converted to a vector embedding using a local model (`all-MiniLM-L6-v2`).
-3. Embeddings and chunk text are stored in ChromaDB on disk.
+3. Embeddings and chunk text are stored in [ChromaDB](https://www.trychroma.com) on disk.
 
 **Query (per request):**
 
 1. The user's question is embedded using the same model.
-2. ChromaDB retrieves the 10 most similar chunks (cosine similarity).
+2. [ChromaDB](https://www.trychroma.com) retrieves the 10 most similar chunks (cosine similarity).
 3. The CrossEncoder reranker re-scores those 10 chunks against the exact question.
 4. Chunks scoring below the similarity threshold (0.5) are discarded; the top 3 are kept.
 5. The selected chunks are assembled into a context prompt, with their relevancy scores included.
@@ -119,7 +121,7 @@ The pipeline maintains a rolling conversation history (last 5 turns). Users can 
 
 ## Key considerations
 
-**Local-first by design:** Embeddings and reranking run on local models. ChromaDB persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency — and that too can run locally via LM Studio or Ollama.
+**Local-first by design:** Embeddings and reranking run on local models. [ChromaDB](https://www.trychroma.com) persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency — and that too can run locally via [LM Studio](https://lmstudio.ai) or [Ollama](https://ollama.ai).
 
 **Document freshness:** The vector database must be re-ingested when source documents change. For frequently updated document sets, incremental ingestion is preferable to a full rebuild.
 
@@ -132,6 +134,6 @@ The pipeline maintains a rolling conversation history (last 5 turns). Users can 
 ## Prerequisites
 
 - Python 3.8+
-- ChromaDB installed locally
+- [ChromaDB](https://www.trychroma.com) installed locally
 - sentence-transformers models (downloaded automatically on first run)
 - An OpenAI-compatible LLM endpoint for answer generation (local or remote)
