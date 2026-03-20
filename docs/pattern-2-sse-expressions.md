@@ -2,7 +2,7 @@
 
 ## Business problem
 
-Data teams want to use LLM-generated text directly inside Qlik load scripts or chart expressions — not as a separate UI panel, but as a native part of the Qlik data model or visualization layer.
+Data teams want to use LLM-generated text directly inside Qlik load scripts or chart expressions — not as a separate UI panel, but as a native part of the Qlik visualization layer.
 
 **Examples:**
 
@@ -79,9 +79,11 @@ This makes SSE better suited than Pattern 1 for **batch processing** or **load-t
 
 **OpenAI compatibility:** Any server implementing `/v1/chat/completions` works — [LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai), OpenAI, Azure OpenAI, or a custom adapter. The SSE plugin is backend-agnostic.
 
-**Configuration in QMC:** The SSE connection must be registered in the Qlik Management Console under *Analytic connections*, specifying the plugin host and port. This is a one-time admin step.
+**Configuration in QMC:** The SSE connection must be registered in the Qlik Management Console under [Analytic connections](https://help.qlik.com/en-US/sense-admin/latest/Subsystems/DeployAdministerQSE/Content/Sense_DeployAdminister/QSEoW/Administer_QSEoW/Managing_QSEoW/analytic-connections-overview.htm) ([setup guide](https://help.qlik.com/en-US/sense-admin/latest/Subsystems/DeployAdministerQSE/Content/Sense_DeployAdminister/QSEoW/Administer_QSEoW/Managing_QSEoW/create-analytic-connection.htm)), specifying the plugin host and port. This is a one-time admin step.
 
 **SSL (optional):** The gRPC connection between Qlik Engine and the SSE plugin can run with or without mutual TLS. SSL is recommended for production environments where the plugin runs on a separate server.
+
+**SSE protocol constraints:** Beyond prompt size and concurrency, using gRPC via the SSE protocol introduces additional constraints — see the [official limitations reference](https://github.com/qlik-oss/server-side-extension/blob/master/docs/limitations.md).
 
 ---
 
