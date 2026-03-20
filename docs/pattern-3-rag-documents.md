@@ -121,13 +121,13 @@ The pipeline maintains a rolling conversation history (last 5 turns). Users can 
 
 ## Key considerations
 
-**Local-first by design:** Embeddings and reranking run on local models. ChromaDB persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency — and that too can run locally via [LM Studio](https://lmstudio.ai) or [Ollama](https://ollama.ai).
+**Local-first by design:** Embeddings and reranking run on local models. ChromaDB persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency, and that too can run locally via [LM Studio](https://lmstudio.ai) or [Ollama](https://ollama.ai).
 
 **Document freshness:** The vector database must be re-ingested when source documents change. For frequently updated document sets, incremental ingestion is preferable to a full rebuild.
 
 **Chunk size tuning:** Retrieval quality depends significantly on chunk size. Larger chunks preserve context but reduce precision; smaller chunks are more precise but may lose surrounding context. Tuning is required per document type.
 
-**Prompt and response guardrails:** Production RAG systems should include input/output sanitization — filtering for bias, sensitive data, confidentiality, and content safety (e.g. [llm-guard](https://pypi.org/project/llm-guard/)). This was explored during development but removed due to GPU performance constraints in the test environment (a laptop with a limited graphics card). It remains an important architectural consideration for any production deployment.
+**Prompt and response guardrails:** Production RAG systems should include input/output sanitization, filtering for bias, sensitive data, confidentiality, and content safety (e.g. [llm-guard](https://pypi.org/project/llm-guard/)). This was explored during development but removed due to GPU performance constraints in the test environment (a laptop with a limited graphics card). It remains an important architectural consideration for any production deployment.
 
 ---
 
