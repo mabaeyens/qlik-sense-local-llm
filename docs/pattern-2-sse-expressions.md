@@ -2,7 +2,7 @@
 
 ## Business problem
 
-Data teams want to use LLM-generated text directly inside Qlik load scripts or chart expressions — not as a separate UI panel, but as a native part of the Qlik visualization layer.
+Data teams want to use LLM-generated text directly inside Qlik load scripts or chart expressions and not as a separate UI panel, but as a native part of the Qlik visualization layer, an extension.
 
 **Examples:**
 
@@ -38,7 +38,7 @@ graph LR
 The **[Server-Side Extension (SSE)](https://github.com/qlik-oss/server-side-extension)** protocol is an official Qlik mechanism that allows external services to expose functions callable from Qlik load scripts and chart expressions. Communication uses **[gRPC](https://grpc.io)**, which means:
 
 - The SSE plugin runs as a separate process, not in the browser
-- Qlik Engine calls it directly — no browser, no CORS
+- Qlik Engine calls it directly: no browser, no CORS
 - Results are returned as native Qlik data types (string, numeric, dual)
 
 This makes SSE better suited than Pattern 1 for **batch processing** or **load-time enrichment**, while Pattern 1 is better for **interactive, session-based** queries tied to the current visualization state.
