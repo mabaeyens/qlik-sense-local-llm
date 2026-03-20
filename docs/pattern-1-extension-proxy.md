@@ -16,13 +16,13 @@ The extension extracts the actual chart data from the Qlik engine and sends it t
 sequenceDiagram
     participant User
     participant Ext as Visualization Extension<br/>(browser)
-    participant Proxy as Local HTTPS Proxy<br/>(localhost:3000)
+    participant Proxy as Local HTTPS Proxy<br/>(configurable port)
     participant LLM as LLM API<br/>(local or remote)
 
     User->>Ext: Selects chart + types question
     Ext->>Ext: Extracts chart data from Qlik Engine API
-    Ext->>Proxy: POST /api/anthropic<br/>(chart data + question + API key)
-    Proxy->>LLM: Forwards request
+    Ext->>Proxy: POST /api/anthropic<br/>(chart data + question + x-api-key header)
+    Proxy->>LLM: Forwards request to Anthropic API
     LLM-->>Proxy: Response
     Proxy-->>Ext: Response
     Ext-->>User: Displays analysis in panel
@@ -34,7 +34,7 @@ sequenceDiagram
 
 Qlik Sense on Windows runs in a browser. Browsers enforce **CORS (Cross-Origin Resource Sharing)** restrictions: a page served from `https://qlik-server` cannot call `https://api.anthropic.com` or any other external API directly.
 
-A local HTTPS proxy running on the Qlik server (or on the client machine) solves this: the browser calls `https://localhost:3000`, which is allowed, and the proxy forwards the request to the LLM API.
+A local HTTPS proxy running on the Qlik server (or on the client machine) solves this: the browser calls `https://localhost`, which is allowed, and the proxy forwards the request to the LLM API.
 
 This is the key architectural constraint that makes the proxy mandatory for browser-based Qlik extensions — and it applies to any LLM API, not just Anthropic.
 
@@ -54,19 +54,21 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 
 1. The user selects a visualization and types a question in the extension panel.
 2. The extension calls the Qlik Engine API to extract the current chart data (rows, dimensions, measures).
-3. The data is formatted into a prompt and sent to the local proxy via HTTPS POST.
-4. The proxy forwards the request to the LLM API, attaching the API key server-side.
+3. The data is formatted into a prompt and sent to the local proxy via HTTPS POST, with the API key in the `x-api-key` request header.
+4. The proxy reads the header and forwards the request — with the API key — to the LLM API.
 5. The LLM response is returned through the proxy and rendered in the extension panel.
 
 ---
 
 ## Key considerations
 
-**API key handling:** The API key is not hardcoded. It is stored encrypted in browser `localStorage`, scoped to the Qlik app ID, and sent per request via a request header. The proxy manages the actual API call and is the only component that sees the key in transit.
+**API key handling:** The user enters the API key once in the extension settings. It is stored in browser `localStorage`, scoped to the Qlik app ID (`anthropic_api_key_{appId}`), and retrieved on each request. It travels as the `x-api-key` header from the browser to the proxy, which forwards it to the LLM API. The key never appears in the Qlik app itself or in the proxy configuration.
 
 **Data volume:** Qlik charts can return thousands of rows. The extension applies a configurable row limit before sending data to avoid exceeding model token limits. In practice, 500–1000 rows are sufficient for most analytical questions.
 
 **SSL certificates:** The proxy uses HTTPS with a self-signed certificate. The certificate must be trusted by the browser and accepted by Qlik Sense to avoid TLS errors. This is a one-time setup step on each machine.
+
+**Port:** The proxy port is configurable via environment variable (default: 3000). The allowed origin (your Qlik Sense server URL) is also configured at the proxy level to restrict CORS access.
 
 **Model selection:** Any model accessible via an OpenAI-compatible API works. Faster, lower-cost models (e.g. Claude Haiku, GPT-4o mini) are well suited for interactive use given the conversational latency expectations.
 
