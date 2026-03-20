@@ -1,4 +1,4 @@
-# Pattern 1 — AI Assistant on Dashboards
+# Pattern 1: AI Assistant on Dashboards
 
 ## Business problem
 
