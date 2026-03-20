@@ -1,4 +1,4 @@
-# LLM Integration Patterns for Qlik Sense
+# LLM Integration Patterns for Qlik
 
 Qlik Cloud delivers AI-assisted analytics natively — Insight Advisor, natural language queries, and AI-generated summaries are available out of the box.
 
