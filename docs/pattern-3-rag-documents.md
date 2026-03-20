@@ -1,4 +1,4 @@
-# Pattern 3 — RAG Pipeline: Ask Your Documents
+# Pattern 3: RAG Pipeline: Ask Your Documents
 
 ## Context
 
@@ -12,9 +12,9 @@ It has no dependency on Qlik Sense and runs entirely as a standalone Python appl
 
 ## Business problem
 
-Organizations have large volumes of internal documents — policies, reports, product manuals, contracts — that cannot easily be modeled as structured data. Users need to query these documents in natural language and get answers grounded in the actual content.
+Organizations have large volumes of internal documents, like policies, reports, product manuals, contracts, that cannot easily be modeled as structured data. Users need to query these documents in natural language and get answers grounded in the actual content.
 
-**Example:** A compliance officer asks: *"What does our data retention policy say about customer records?"* — and gets an answer sourced from the actual policy document, not from the LLM's training data.
+**Example:** A compliance officer asks: *"What does our data retention policy say about customer records?"*, and gets an answer sourced from the actual policy document, not from the LLM's training data.
 
 Without RAG, an LLM answers from its training data, which does not include your internal documents. With RAG, it answers from the documents you give it.
 
@@ -31,11 +31,11 @@ graph TD
         PDF --> ING --> VDB
     end
 
-    subgraph Query["Query — per user request"]
+    subgraph Query["Query / per user request"]
         Q["User question"]
         EMB["Embed question\n(same model as ingestion)"]
         RET["Similarity search\n(retrieve top-k chunks)"]
-        RRK["Reranker\n(CrossEncoder — rescore for precision)"]
+        RRK["Reranker\n(CrossEncoder / rescore for precision)"]
         LLM["LLM Server\n(OpenAI-compatible)"]
         ANS["Answer + Sources"]
 
@@ -51,7 +51,7 @@ graph TD
 
 **[Retrieval-Augmented Generation (RAG)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)** prevents LLM hallucination by grounding responses in a specific document corpus:
 
-1. Documents are split into chunks and converted to **vector embeddings** — numerical representations of semantic meaning.
+1. Documents are split into chunks and converted to **vector embeddings**, numerical representations of semantic meaning.
 2. At query time, the question is also embedded, and the most semantically similar chunks are retrieved from the vector database.
 3. Those chunks are passed to the LLM as context. The model answers based on the retrieved content, not its training data.
 
@@ -133,9 +133,9 @@ The pipeline maintains a rolling conversation history (last 5 turns). Users can 
 
 ## Next steps
 
-**Multi-format support:** The current ingestor handles PDFs, which served to illustrate the RAG pipeline end-to-end. A natural extension would be to support additional document types — plain text, PowerPoint, Excel, HTML, and others — each requiring its own extraction logic before the chunking and embedding stages remain unchanged.
+**Multi-format support:** The current ingestor handles PDFs, which served to illustrate the RAG pipeline end-to-end. A natural extension would be to support additional document types, plain text, PowerPoint, Excel, HTML, and others, each requiring its own extraction logic before the chunking and embedding stages remain unchanged.
 
-**Conversational memory:** The current rolling history is limited to the last few turns and is not persisted across sessions. Adding a memory layer — whether storing summaries, key facts extracted from past conversations, or full session logs — would make the system significantly more useful for ongoing document Q&A workflows.
+**Conversational memory:** The current rolling history is limited to the last few turns and is not persisted across sessions. Adding a memory layer, whether storing summaries, key facts extracted from past conversations, or full session logs, would make the system significantly more useful for ongoing document Q&A workflows.
 
 ---
 
