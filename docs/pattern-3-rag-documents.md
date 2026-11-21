@@ -1,10 +1,10 @@
-# Pattern 3 — RAG Pipeline: Ask Your Documents
+# Pattern 3: RAG Pipeline: Ask Your Documents
 
 ## Context
 
-This is a standalone project built to understand how Retrieval-Augmented Generation works in practice — how documents are ingested, how relevant chunks are retrieved, how a reranker improves precision, and how an LLM produces a grounded answer.
+This is a [standalone project](https://github.com/mabaeyens/RAG) built to understand how Retrieval-Augmented Generation works in practice: how documents are ingested, how relevant chunks are retrieved, how a reranker improves precision, and how an LLM produces a grounded answer.
 
-The inspiration was **Qlik Answers** (the document Q&A capability in Qlik Cloud), which is built on RAG principles. This project was developed independently before Qlik Answers was publicly available — not as a replica, but as a hands-on way to understand the architecture from the ground up.
+The inspiration was **[Qlik Answers](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/QlikAnswers/Qlik-Answers.htm)** (the document Q&A capability in Qlik Cloud), which is built on RAG principles. This project was developed independently before Qlik Answers was publicly available, not as a replica, but as a hands-on way to understand the architecture from the ground up.
 
 It has no dependency on Qlik Sense and runs entirely as a standalone Python application.
 
@@ -12,9 +12,9 @@ It has no dependency on Qlik Sense and runs entirely as a standalone Python appl
 
 ## Business problem
 
-Organizations have large volumes of internal documents — policies, reports, product manuals, contracts — that cannot easily be modeled as structured data. Users need to query these documents in natural language and get answers grounded in the actual content.
+Organizations have large volumes of internal documents, like policies, reports, product manuals, contracts, that cannot easily be modeled as structured data. Users need to query these documents in natural language and get answers grounded in the actual content.
 
-**Example:** A compliance officer asks: *"What does our data retention policy say about customer records?"* — and gets an answer sourced from the actual policy document, not from the LLM's training data.
+**Example:** A compliance officer asks: *"What does our data retention policy say about customer records?"*, and gets an answer sourced from the actual policy document, not from the LLM's training data.
 
 Without RAG, an LLM answers from its training data, which does not include your internal documents. With RAG, it answers from the documents you give it.
 
@@ -31,11 +31,11 @@ graph TD
         PDF --> ING --> VDB
     end
 
-    subgraph Query["Query — per user request"]
+    subgraph Query["Query / per user request"]
         Q["User question"]
         EMB["Embed question\n(same model as ingestion)"]
         RET["Similarity search\n(retrieve top-k chunks)"]
-        RRK["Reranker\n(CrossEncoder — rescore for precision)"]
+        RRK["Reranker\n(CrossEncoder / rescore for precision)"]
         LLM["LLM Server\n(OpenAI-compatible)"]
         ANS["Answer + Sources"]
 
@@ -51,7 +51,7 @@ graph TD
 
 **[Retrieval-Augmented Generation (RAG)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)** prevents LLM hallucination by grounding responses in a specific document corpus:
 
-1. Documents are split into chunks and converted to **vector embeddings** — numerical representations of semantic meaning.
+1. Documents are split into chunks and converted to **vector embeddings**, numerical representations of semantic meaning.
 2. At query time, the question is also embedded, and the most semantically similar chunks are retrieved from the vector database.
 3. Those chunks are passed to the LLM as context. The model answers based on the retrieved content, not its training data.
 
@@ -79,12 +79,12 @@ A **reranker** (CrossEncoder model) adds a second pass: the top-k retrieved chun
 
 1. PDFs are read and split into overlapping text chunks.
 2. Each chunk is converted to a vector embedding using a local model (`all-MiniLM-L6-v2`).
-3. Embeddings and chunk text are stored in [ChromaDB](https://www.trychroma.com) on disk.
+3. Embeddings and chunk text are stored in ChromaDB on disk.
 
 **Query (per request):**
 
 1. The user's question is embedded using the same model.
-2. [ChromaDB](https://www.trychroma.com) retrieves the 10 most similar chunks (cosine similarity).
+2. ChromaDB retrieves the 10 most similar chunks (cosine similarity).
 3. The CrossEncoder reranker re-scores those 10 chunks against the exact question.
 4. Chunks scoring below the similarity threshold (0.5) are discarded; the top 3 are kept.
 5. The selected chunks are assembled into a context prompt, with their relevancy scores included.
@@ -121,19 +121,27 @@ The pipeline maintains a rolling conversation history (last 5 turns). Users can 
 
 ## Key considerations
 
-**Local-first by design:** Embeddings and reranking run on local models. [ChromaDB](https://www.trychroma.com) persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency — and that too can run locally via [LM Studio](https://lmstudio.ai) or [Ollama](https://ollama.ai).
+**Local-first by design:** Embeddings and reranking run on local models. ChromaDB persists to disk. No data leaves the machine during ingestion or retrieval. The LLM call is the only potential external dependency, and that too can run locally via [LM Studio](https://lmstudio.ai) or [Ollama](https://ollama.ai).
 
 **Document freshness:** The vector database must be re-ingested when source documents change. For frequently updated document sets, incremental ingestion is preferable to a full rebuild.
 
 **Chunk size tuning:** Retrieval quality depends significantly on chunk size. Larger chunks preserve context but reduce precision; smaller chunks are more precise but may lose surrounding context. Tuning is required per document type.
 
-**Prompt and response guardrails:** Production RAG systems should include input/output sanitization — filtering for bias, sensitive data, confidentiality, and content safety (e.g. [llm-guard](https://pypi.org/project/llm-guard/)). This was explored during development but removed due to GPU performance constraints in the test environment (a laptop with a limited graphics card). It remains an important architectural consideration for any production deployment.
+**Prompt and response guardrails:** Production RAG systems should include input/output sanitization, filtering for bias, sensitive data, confidentiality, and content safety (e.g. [llm-guard](https://pypi.org/project/llm-guard/)). This was explored during development but removed due to GPU performance constraints in the test environment (a laptop with a limited graphics card). It remains an important architectural consideration for any production deployment.
+
+---
+
+## Next steps
+
+**Multi-format support:** The current ingestor handles PDFs, which served to illustrate the RAG pipeline end-to-end. A natural extension would be to support additional document types, plain text, PowerPoint, Excel, HTML, and others, each requiring its own extraction logic before the chunking and embedding stages remain unchanged.
+
+**Conversational memory:** The current rolling history is limited to the last few turns and is not persisted across sessions. Adding a memory layer, whether storing summaries, key facts extracted from past conversations, or full session logs, would make the system significantly more useful for ongoing document Q&A workflows.
 
 ---
 
 ## Prerequisites
 
 - Python 3.8+
-- [ChromaDB](https://www.trychroma.com) installed locally
+- ChromaDB installed locally
 - sentence-transformers models (downloaded automatically on first run)
 - An OpenAI-compatible LLM endpoint for answer generation (local or remote)

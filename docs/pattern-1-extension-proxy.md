@@ -1,8 +1,8 @@
-# Pattern 1 — AI Assistant on Dashboards
+# Pattern 1: AI Assistant on Dashboards
 
 ## Business problem
 
-Users want to ask questions about the data in their Qlik Sense dashboards without leaving the application. The question should be answered in the context of the actual data visible on screen — not a generic LLM response.
+Users want to ask questions about the data in their Qlik Sense dashboards without leaving the application. The question should be answered in the context of the actual data visible on screen, not a generic LLM response.
 
 **Example:** A sales manager opens a revenue-by-region chart and asks: *"Which regions are underperforming compared to last quarter, and what could be causing it?"*
 
@@ -32,11 +32,11 @@ sequenceDiagram
 
 ## Why the proxy?
 
-Qlik Sense on Windows runs in a browser. Browsers enforce **CORS (Cross-Origin Resource Sharing)** restrictions: a page served from `https://qlik-server` cannot call `https://api.anthropic.com` or any other external API directly.
+Qlik Sense on Windows runs in a browser. Browsers enforce **[CORS (Cross-Origin Resource Sharing)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)** restrictions: a page served from `https://qlik-server` cannot call `https://api.anthropic.com` or any other external API directly.
 
 A local HTTPS proxy running on the Qlik server (or on the client machine) solves this: the browser calls `https://localhost`, which is allowed, and the proxy forwards the request to the LLM API.
 
-This is the key architectural constraint that makes the proxy mandatory for browser-based Qlik extensions — and it applies to any LLM API, not just Anthropic.
+This is the key architectural constraint that makes the proxy mandatory for browser-based Qlik extensions, and it applies to any LLM API, not just Anthropic.
 
 ---
 
@@ -55,7 +55,7 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 1. The user selects a visualization and types a question in the extension panel.
 2. The extension calls the Qlik Engine API to extract the current chart data (rows, dimensions, measures).
 3. The data is formatted into a prompt and sent to the local proxy via HTTPS POST, with the API key in the `x-api-key` request header.
-4. The proxy reads the header and forwards the request — with the API key — to the LLM API.
+4. The proxy reads the header and forwards the request, with the API key, to the LLM API.
 5. The LLM response is returned through the proxy and rendered in the extension panel.
 
 ---
@@ -66,7 +66,9 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 
 **Data volume:** Qlik charts can return thousands of rows. The extension applies a configurable row limit before sending data to avoid exceeding model token limits. In practice, 500–1000 rows are sufficient for most analytical questions.
 
-**SSL certificates:** The proxy uses HTTPS with a self-signed certificate. The certificate must be trusted by the browser and accepted by Qlik Sense to avoid TLS errors. This is a one-time setup step on each machine.
+**SSL certificates:** The proxy must run on HTTPS. Qlik Sense is served over HTTPS, and browsers block mixed content-calls from a secure page to an HTTP endpoint are rejected before leaving the browser. This makes HTTPS a functional requirement, not just a security choice.
+
+In this project, self-signed certificates are used to minimise cost and setup overhead. In a corporate deployment, the proxy can use certificates issued by the organisation's own CA, already trusted in the Windows root certificate store, which removes the manual browser trust step. Either way, HTTPS also ensures that the API key and chart data, which may be confidential, are not transmitted in plaintext over the local network.
 
 **Port:** The proxy port is configurable via environment variable (default: 3000). The allowed origin (your Qlik Sense server URL) is also configured at the proxy level to restrict CORS access.
 
@@ -80,3 +82,13 @@ This is the key architectural constraint that makes the proxy mandatory for brow
 - Node.js runtime on the machine running the proxy
 - Access to an LLM API (local or remote, OpenAI-compatible)
 - Browser trust configured for the self-signed SSL certificate
+
+---
+
+## Limitations and scaling considerations
+
+**On-premises scaling:** This pattern was designed for individual or small-team use. Scaling it to many concurrent users introduces practical constraints: each LLM request can take several seconds, and LLM API rate limits impose an upper bound on throughput. The local proxy has no authentication layer, request queuing, or rate-limiting of its own. For organization-wide deployment, a production-grade service with proper access control and error handling would be needed.
+
+**Context scope:** The context provided to the LLM is limited to the data visible in a single Qlik chart: rows, dimensions, measures, plus basic data model metadata (table names, column names, field relationships). This is a narrow slice of the full application context. By contrast, [Qlik Answers](https://help.qlik.com/en-US/cloud-services/Subsystems/Hub/Content/Sense_Hub/QlikAnswers/Qlik-Answers.htm) can leverage the complete semantic layer of a Qlik app, including all field associations and business logic embedded in the data model. For analytical questions that require broader application context, this architecture has inherent limitations.
+
+**Next steps:** A natural extension of this pattern is to combine chart-level context with document-level knowledge through RAG (Retrieval-Augmented Generation). Ideas for this approach are developed in [Pattern 3](pattern-3-rag-documents.md).

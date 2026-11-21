@@ -1,4 +1,4 @@
-# Pattern 4 — AI Client on Qlik Sense via MCP
+# Pattern 4: AI Client on Qlik Sense via MCP
 
 ## Business problem
 
