@@ -6,7 +6,7 @@ Organizations running **[Qlik Sense Enterprise on Windows](https://help.qlik.com
 
 This does not mean AI integration is impossible. It means it requires architecture.
 
-This repository documents two direct integration patterns for Qlik Sense on Windows, plus a standalone RAG pipeline that explores the architecture behind document AI systems like Qlik Answers. Each pattern addresses a different business problem and is compatible with any OpenAI-compatible LLM — local ([LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai)) or remote (OpenAI, Anthropic, Azure OpenAI).
+This repository documents three direct integration patterns for Qlik Sense on Windows, plus a standalone RAG pipeline that explores the architecture behind document AI systems like Qlik Answers. Each pattern addresses a different business problem and is compatible with any OpenAI-compatible LLM — local ([LM Studio](https://lmstudio.ai), [Ollama](https://ollama.ai)) or remote (OpenAI, Anthropic, Azure OpenAI).
 
 > **These are reference architectures, not a code library.** The goal is to show that these integrations are possible and production-tested. How you implement them is up to you.
 
@@ -20,13 +20,14 @@ These patterns were designed with that constraint in mind.
 
 ---
 
-## Three patterns
+## Four patterns
 
 | # | Pattern | What it enables | Type |
 |---|---------|----------------|------|
 | 1 | [AI Assistant on Dashboards](docs/pattern-1-extension-proxy.md) | Ask questions about chart data in natural language | Qlik integration |
 | 2 | [LLM in Qlik Expressions](docs/pattern-2-sse-expressions.md) | Use LLM output in load scripts and expressions | Qlik integration |
 | 3 | [Ask Your Documents](docs/pattern-3-rag-documents.md) | Query internal PDF documents using natural language | Standalone RAG pipeline |
+| 4 | [AI Client via MCP](docs/pattern-4-mcp-server.md) | Let an AI assistant work with a Qlik Sense deployment through its APIs | Qlik integration |
 
 ---
 
@@ -38,11 +39,12 @@ graph LR
 
     QS -->|"① Extension + Proxy"| P1["LLM API\n(local or remote)"]
     QS -->|"② SSE gRPC"| P2["LLM Server\n(OpenAI-compatible)"]
+    QS -->|"④ MCP server"| P4["AI client\n(MCP-capable)"]
 
     P3["③ RAG Pipeline\nPDFs → Vector DB → LLM\n(standalone)"]
 ```
 
-Patterns 1 and 2 integrate directly with the Qlik Engine. Pattern 3 is a standalone pipeline with no dependency on Qlik Sense — included here as a practical exploration of the RAG architecture behind document AI systems.
+Patterns 1, 2 and 4 integrate directly with the Qlik Engine. Pattern 3 is a standalone pipeline with no dependency on Qlik Sense — included here as a practical exploration of the RAG architecture behind document AI systems.
 
 ---
 
