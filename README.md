@@ -59,6 +59,7 @@ Screenshots of each pattern running in Qlik Sense are planned for a future updat
 - Qlik Sense Enterprise on Windows
 - [LM Studio](https://lmstudio.ai) with local models (Llama, Mistral)
 - Anthropic Claude API
+- An MCP client against Qlik Sense Enterprise on Windows (Pattern 4)
 
 ---
 
