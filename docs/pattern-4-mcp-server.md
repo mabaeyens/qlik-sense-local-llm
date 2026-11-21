@@ -79,7 +79,7 @@ An MCP server turns those two APIs into a vocabulary an AI client understands, w
 
 **What the safeguards do not prove:** A confirmation step shows that a request was approved, not that it was right. If the assistant picks the wrong app and the question reads sensibly, approving it does what was approved. The gates are a second line behind the identity, not a replacement for it. Run the server under an account with the rights the job needs, never a site administrator by default.
 
-**No undo:** Qlik Sense Enterprise has no recycle bin. Deleted apps and overwritten scripts do not come back, so prevention matters more than recovery. Refusing to edit a published app in place, and working on a copy instead, is a better default than any amount of after-the-fact care.
+**No built-in undo:** Qlik Sense Enterprise has no trash bin. Deleting an app from the management console is generally irreversible, and getting one back depends on a backup taken beforehand (a file-level copy or a repository backup), which restores it under a new ID. The same goes for an overwritten load script unless you kept a copy. Prevention matters more than recovery. Refusing to edit a published app in place, and working on a copy instead, is a better default than any amount of after-the-fact care.
 
 **Data egress:** Every tool result is, in effect, sent to whatever model sits behind the client. That is the same question as in Patterns 1 and 2, with a sharper edge: an assistant can pull data on its own initiative. Decide per deployment which model is acceptable for which data. A local model keeps everything inside the boundary; a remote model needs the same governance as any other external API, and scoped results are the first control.
 
